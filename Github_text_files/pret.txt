@@ -1,11 +1,68 @@
 //*****************PRET*******************
+//*****************PRET*******************
 PRET:
-LOAD num(@1)&'-'&num(month(@5))&'-'&num(year(@5)) as MATEMP_PRET, 
+LOAD num(@1)&'-'&num(month(@5))&'-'&num(if(Year(@5)='0','2000',
+	 	if(Year(@5)='3','2003',
+	 	if(Year(@5)='201','2001',
+	 	if(Year(@5)='210','2010',
+	 	if(Year(@5)='88','2016',
+	 	if(Year(@5)='97','1997',
+	 	if(Year(@5)='199','1999',
+	 	if(Year(@5)='202','2002',
+	 	if(Year(@5)='200','2000',
+	 	if(Year(@5)='204','2004',
+	 	if(Year(@5)='205','2005',
+	 	if(Year(@5)='206','2006',
+	 	if(Year(@5)='212','2012',
+	 	if(Year(@5)='998','1998',
+	 	if(Year(@5)='1198','1998',	 	
+	 	if(Year(@5)='1499','1999',	 	
+	 	if(Year(@5)='7005','2005',
+	 		Year(@5))))))))))))))))))) as MATEMP_PRET, 
 		
+		if(Year(@5)='0','2000',
+	 	if(Year(@5)='3','2003',
+	 	if(Year(@5)='201','2001',
+	 	if(Year(@5)='210','2010',
+	 	if(Year(@5)='88','2016',
+	 	if(Year(@5)='97','1997',
+	 	if(Year(@5)='199','1999',
+	 	if(Year(@5)='202','2002',
+	 	if(Year(@5)='200','2000',
+	 	if(Year(@5)='204','2004',
+	 	if(Year(@5)='205','2005',
+	 	if(Year(@5)='206','2006',
+	 	if(Year(@5)='212','2012',
+	 	if(Year(@5)='998','1998',
+	 	if(Year(@5)='1198','1998',	 	
+	 	if(Year(@5)='1499','1999',	 	
+	 	if(Year(@5)='7005','2005',
+	 		Year(@5)))))))))))))))))) &'-'&num(Month(@5))&'-01 00:00:00' as datep,
      @2 as CODTPR, 
      @3 as NUMPRET,  
-     num(Year(@5))&'-'&num(Month(@5))&'-01 00:00:00' as DATEPRET,
-     num(Year(@5))&'-'&num(Month(@5))&'-01 00:00:00' as IDMONTHYEARPRET, 
+     //num(Year(@5))&'-'&num(Month(@5))&'-01 00:00:00' as DATEPRET,
+     //Date((@5),'YYYY-MMM-DD') as DATEPRET,
+     //Date((@5),'YYYY/MM/DD hh:mm:ss') as DATEPRET,
+     Date(Floor(@5),'YYYY-MM-DD hh:mm:ss') as DATEPRET,
+     //num(Year(date(@5)))&'-'&num(Month(@5))&'-01 00:00:00' as DATEPRET,
+     num(Year(if(Year(@5)='0','2000',
+	 	if(Year(@5)='3','2003',
+	 	if(Year(@5)='201','2001',
+	 	if(Year(@5)='210','2010',
+	 	if(Year(@5)='88','2016',
+	 	if(Year(@5)='97','1997',
+	 	if(Year(@5)='199','1999',
+	 	if(Year(@5)='202','2002',
+	 	if(Year(@5)='200','2000',
+	 	if(Year(@5)='204','2004',
+	 	if(Year(@5)='205','2005',
+	 	if(Year(@5)='206','2006',
+	 	if(Year(@5)='212','2012',
+	 	if(Year(@5)='998','1998',
+	 	if(Year(@5)='1198','1998',	 	
+	 	if(Year(@5)='1499','1999',	 	
+	 	if(Year(@5)='7005','2005',
+	 		Year(@5))))))))))))))))))))&'-'&num(Month(@5))&'-01 00:00:00' as IDMONTHYEARPRET, 
      @6 as MONTANT, 
      @7 as RETENUMOIS, 
      @8 as RETENUDERNIER, 
@@ -23,13 +80,19 @@ Remove(Col, Pos(Top, 16)),
 Remove(Col, Pos(Top, 15))
 ));
 
-
+QUARTERSMAP:
+Mapping LOAD
+		RowNo() as MONTH,
+		'Q'&Ceil (RowNo()/3) as QUARTER
+		AutoGenerate (12);
 TEMPSPRET:
-		LOAD Min(DATEPRET) AS MINDATEPRET,
-		MAX(DATEPRET) AS MAXDATEPRET
+		LOAD 
+		Min(date(datep)) AS MINDATEPRET,
+		MAX(date(datep)) AS MAXDATEPRET
+		
 		Resident PRET;
-LET VARMINDATEPRET=Num(Peek('MINDATEPRET',0,'TEMPSPRET'));
-LET VARMAXDATEPRET=Num(Peek('MAXDATEPRET',0,'TEMPSPRET'));
+LET VARMINDATEPRET=num(Peek('MINDATEPRET',0,'TEMPSPRET'));
+LET VARMAXDATEPRET=num(Peek('MAXDATEPRET',0,'TEMPSPRET'));
 DROP Table TEMPSPRET;
 				
 TEMPCALENDERPRET:
@@ -40,17 +103,10 @@ LOAD
 MASTERCALENDERPRET :
 LOAD TEMPSDATEPRET as ORDERDATEPRET,
 Week (TEMPSDATEPRET) AS WEEKPRET,
-Year(TEMPSDATEPRET) as YEARPRET,
-num(Year (TEMPSDATEPRET))&'-'&num(Month(TEMPSDATEPRET))&'-01 00:00:00' as IDMONTHYEARPRET,
+num(Year(TEMPSDATEPRET)) as YEARPRET,
+Year (TEMPSDATEPRET)&'-'&num(Month(TEMPSDATEPRET))&'-01 00:00:00' as IDMONTHYEARPRET,
 MONTH(TEMPSDATEPRET) as MONTHPRET,
-DAY(TEMPSDATEPRET) as DAYPRET,
-YearToDate(TEMPSDATEPRET)*-1 as CURRYEARIDFLAGPRET,
-YearToDate(TEMPSDATEPRET,-1)*-1 as LASTYEARIDFLAGPRET,
-InYear(TEMPSDATEPRET,MonthStart($(VARMAXDATE)),-1) as RC12PRET,
-Date(MonthsStart(TEMPSDATEPRET,'MM-YYYY')) AS MONTHYEARPRET,
-ApplyMap('QUARTERSMAP',Month(TEMPSDATEPRET),Null()) as QUARTERPRET,
-Week(WeekStart(TEMPSDATEPRET))&'-'&WeekYear(TEMPSDATEPRET) as WEEKYEARPRET,
-WeekDay(TEMPSDATEPRET) as WEEKDAYPRET
+DAY(TEMPSDATEPRET) as DAYPRET
 Resident TEMPCALENDERPRET
 
 Order By TEMPSDATEPRET asc;
