@@ -1,0 +1,26 @@
+							//*****************POSITION*******************
+
+LOAD @1 as "CODPOS" , 
+     @2 as "LIBPOS"
+FROM
+[..\QVD\POSITION.qvd]
+(qvd, filters(
+Remove(Col, Pos(Top, 6)),
+Remove(Col, Pos(Top, 5)),
+Remove(Col, Pos(Top, 4)),
+Remove(Col, Pos(Top, 3))
+));
+
+							//*****************SOUS-POSITION*******************
+
+LOAD 
+		@1&'-'&@2 as CODE_PSP,
+		@1 as CODPOS,  
+     	@3 as LIBSPOS
+FROM
+[..\QVD\SOUS_POSITION.qvd]
+(qvd, filters(
+Remove(Col, Pos(Top, 6)),
+Remove(Col, Pos(Top, 5)),
+Remove(Col, Pos(Top, 4))
+));

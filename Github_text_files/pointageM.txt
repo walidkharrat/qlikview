@@ -1,0 +1,130 @@
+
+                   /*********    chargement de la table pointm temporairement  ***********/
+POINTM_TMP:
+LOAD
+//MATEMP&'-'&MOIS&'-'&if([ANNEE]='0','2000',
+//	 	if([ANNEE]='3','2003',
+//	 	if([ANNEE]='201','2001',
+//	 	if([ANNEE]='210','2010',
+//	 	if([ANNEE]='88','2016',
+//	 		ANNEE))))) as IDPOINTM,
+//	 		MATEMP&'-'&MOIS&'-'&if([ANNEE]='0','2000',
+//	 	if([ANNEE]='3','2003',
+//	 	if([ANNEE]='201','2001',
+//	 	if([ANNEE]='210','2010',
+//	 	if([ANNEE]='88','2016',
+//	 		ANNEE))))) as IDPOINTM_M,
+	 	
+	 
+	 ANNEE, 
+     MOIS,
+     date(ANNEE&'-'&MOIS&'-01 00:00:00') as DATEP,  
+     MATEMP, 
+     HTOTAL, 
+     HN, 
+     HSN, 
+     HS25, 
+     HS50, 
+     JPRES, 
+     JSSACCT, 
+     JMAL, 
+     JCP, 
+     HCP, 
+     JCNAISS, 
+     JMAR, 
+     JCDECES, 
+     JCSS, 
+     HCAUTO, 
+     POSTE, 
+     ANJ, 
+     JCSSB, 
+     JMAL90, 
+     JCPELER, 
+     CODCNT, 
+     HCPELER
+FROM
+[..\QVD\POINTM.qvd]
+(qvd)
+Where  ANNEE>=2005
+;
+QUARTERSMAP:
+Mapping LOAD
+		RowNo() as MONTH,
+		'Q'&Ceil (RowNo()/3) as QUARTER
+		AutoGenerate (12);
+TEMPS:
+		LOAD Min(DATEP) AS MINDATE,
+		MAX(DATEP) AS MAXDATE
+		Resident POINTM_TMP;
+LET VARMINDATE=Num(Peek('MINDATE',0,'TEMPS'));
+LET VARMAXDATE=Num(Peek('MAXDATE',0,'TEMPS'));
+DROP Table TEMPS;
+				
+TEMPCALENDER:
+LOAD 
+		$(VARMINDATE)+IterNo()-1 as NUM,
+		Date($(VARMINDATE)+IterNo()-1) as TEMPSDATE
+		AUTOGENERATE 1 WHILE $(VARMINDATE)+IterNo()-1 <=$(VARMAXDATE);
+MASTERCALENDER :
+LOAD TEMPSDATE as ORDERDATE,
+Week (TEMPSDATE) AS WEEK,
+Year(TEMPSDATE) as YEAR,
+num(Year (TEMPSDATE))&'-'&num(Month(TEMPSDATE))&'-01 00:00:00' as IDMONTHYEAR,
+MONTH(TEMPSDATE) as MONTH,
+DAY(TEMPSDATE) as DAY,
+YearToDate(TEMPSDATE)*-1 as CURRYEARIDFLAG,
+YearToDate(TEMPSDATE,-1)*-1 as LASTYEARIDFLAG,
+InYear(TEMPSDATE,MonthStart($(VARMAXDATE)),-1) as RC12,
+Date(MonthsStart(TEMPSDATE,'MM-YYYY')) AS MONTHYEAR,
+ApplyMap('QUARTERSMAP',Month(TEMPSDATE),Null()) as QUARTER,
+Week(WeekStart(TEMPSDATE))&'-'&WeekYear(TEMPSDATE) as WEEKYEAR,
+WeekDay(TEMPSDATE) as WEEKDAY
+Resident TEMPCALENDER
+
+Order By TEMPSDATE asc;
+DROP Table TEMPCALENDER;
+
+STORE [POINTM_TMP] into ..\QVD\POINTM_TMP.qvd ; 
+
+                   /*********    chargement de la table pointm   ***********/
+                   
+POINTM:
+LOAD 	//Raffinage de donnée de champ année
+		if([ANNEE]='0','2000',
+	 	if([ANNEE]='3','2003',
+	 	if([ANNEE]='201','2001',
+	 	if([ANNEE]='210','2010',
+	 	if([ANNEE]='88','2016',
+	 		ANNEE)))))AS ANNEE_P,
+	 		
+	 //generation d'un nouveau id composé		
+	MATEMP&'-'&MOIS&'-'&if([ANNEE]='0','2000',
+	 	if([ANNEE]='3','2003',
+	 	if([ANNEE]='201','2001',
+	 	if([ANNEE]='210','2010',
+	 	if([ANNEE]='88','2016',
+	 		ANNEE))))) as IDPOINTM,
+	 		MATEMP&'-'&MOIS&'-'&if([ANNEE]='0','2000',
+	 	if([ANNEE]='3','2003',
+	 	if([ANNEE]='201','2001',
+	 	if([ANNEE]='210','2010',
+	 	if([ANNEE]='88','2016',
+	 		ANNEE))))) as IDPOINTMS,
+	 
+	 num(MATEMP)&'-'&num(MOIS)&'-'&if([ANNEE]='0','2000',
+	 	if([ANNEE]='3','2003',
+	 	if([ANNEE]='201','2001',
+	 	if([ANNEE]='210','2010',
+	 	if([ANNEE]='88','2016',
+	 		num(ANNEE)))))) as IDPOINTM_M,
+//	 IDPOINTMS AS IDPOINTM_EB,
+	num(ANNEE)&'-'&num(MOIS)&'-01 00:00:00' AS IDMONTHYEAR,
+	 MOIS AS MOIS_P, 
+     num(MATEMP) AS MATEMP_PTM,
+	 HTOTAL, 
+     HN, 
+     POSTE AS ID_TYPE_POSTE
+   
+
+
+Resident POINTM_TMP;

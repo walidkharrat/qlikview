@@ -1,0 +1,68 @@
+
+							//*****************SERVICE*******************
+
+LOAD CODSRV, 
+     LIBSRV, 
+     If(IsNull([CODE_TSRV]),0,[CODE_TSRV])     AS CODE_TSRV
+FROM
+[..\QVD\SERVICE.qvd]
+(qvd);
+
+							//*****************TYPE-SERVICE*******************
+
+LOAD @1 as CODE_TSRV, 
+     @2 as LIBTSRV
+FROM
+[..\QVD\TYPE_SERVICE.qvd]
+(qvd, filters(
+Remove(Col, Pos(Top, 7)),
+Remove(Col, Pos(Top, 6)),
+Remove(Col, Pos(Top, 5)),
+Remove(Col, Pos(Top, 4)),
+Remove(Col, Pos(Top, 3))
+));
+
+//*****************CENTRE*******************
+LOAD	@1 as CODCNTB,
+    	@2 as LIBCNT, 
+     	@3 as SIGCNT, 
+     	@4 as CODREG, 
+     	@5 as ADRCNT, 
+     	@6 as VILCNT, 
+     	@7 as CPCNT
+FROM
+[..\QVD\CENTRE.qvd]
+(qvd, filters(
+Remove(Col, Pos(Top, 5)),
+Remove(Col, Pos(Top, 3)),
+Remove(Col, Pos(Top, 6)),
+Remove(Col, Pos(Top, 8)),
+Remove(Col, Pos(Top, 8)),
+Remove(Col, Pos(Top, 8)),
+Remove(Col, Pos(Top, 8)),
+Remove(Col, Pos(Top, 8)),
+Remove(Col, Pos(Top, 8)),
+Remove(Col, Pos(Top, 8)),
+Remove(Col, Pos(Top, 8)),
+Remove(Col, Pos(Top, 9)),
+Remove(Col, Pos(Top, 9)),
+Remove(Col, Pos(Top, 8))
+));
+
+							//*****************REGION*******************
+							
+REGION:
+LOAD @1 as CODREG, 
+     @2 as LIBREG, 
+     @3 as SIGREG, 
+     @4 as NOCNSS
+FROM
+[..\QVD\REGION.qvd]
+(qvd, filters(
+Remove(Col, Pos(Top, 9)),
+Remove(Col, Pos(Top, 8)),
+Remove(Col, Pos(Top, 7)),
+Remove(Col, Pos(Top, 5)),
+Remove(Col, Pos(Top, 4))
+));
+

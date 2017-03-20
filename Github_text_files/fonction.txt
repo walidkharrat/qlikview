@@ -1,0 +1,14 @@
+							//*****************FONCTION*******************
+
+LOAD @1 as CODFONC, 
+     @2 as LIBFONC, 
+     @3 as SIGFONC
+FROM
+[..\QVD\FONCTION.qvd]
+(qvd, filters(
+Remove(Col, Pos(Top, 8)),
+Remove(Col, Pos(Top, 7)),
+Remove(Col, Pos(Top, 6)),
+Remove(Col, Pos(Top, 5)),
+Remove(Col, Pos(Top, 4))
+));

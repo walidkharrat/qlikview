@@ -1,0 +1,23 @@
+
+							//*****************GRADE*******************
+LOAD @1 as CODGRD, 
+     @2 as LIBGRD, 
+     @3 as CATDEBUT, 
+     @4 as CATFIN, 
+     if(@5='T', 'TECHNICIEN' ,If(@5='A', 'ADMINISTRATIF',[@5])) as [TECGRD] ,
+      if(@6='E', 'EXECUTION' ,If(@6='M', 'METRISE', if(@6='C', 'CADRE',[@6]))) as [TYPEGRDCOLLEGE] ,
+     @7 as GROUPEGRD, 
+     @8 as CATPLAFON, 
+     @9 as CLASSEDEBUT, 
+     @10 as CLASSEFIN, 
+     @11 as CLASSEPLAFON, 
+     if(@12='', 'N', [@12]) as [SUPPERIEUR]
+FROM
+[..\QVD\GRADE.qvd]
+(qvd, filters(
+Remove(Col, Pos(Top, 17)),
+Remove(Col, Pos(Top, 16)),
+Remove(Col, Pos(Top, 10)),
+Remove(Col, Pos(Top, 9)),
+Remove(Col, Pos(Top, 8))
+));

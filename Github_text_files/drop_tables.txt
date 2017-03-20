@@ -1,0 +1,4 @@
+                   /*********    suppression des tables temporairement   ***********/
+   
+DROP Table POINTM_TMP;
+  DROP table table1;

@@ -1,0 +1,86 @@
+//*****************PRET*******************
+PRET:
+LOAD num(@1)&'-'&num(month(@5))&'-'&num(year(@5)) as MATEMP_PRET, 
+		
+     @2 as CODTPR, 
+     @3 as NUMPRET,  
+     num(Year(@5))&'-'&num(Month(@5))&'-01 00:00:00' as DATEPRET,
+     num(Year(@5))&'-'&num(Month(@5))&'-01 00:00:00' as IDMONTHYEARPRET, 
+     @6 as MONTANT, 
+     @7 as RETENUMOIS, 
+     @8 as RETENUDERNIER, 
+     @9 as DATE1RETENU, 
+     @10 as RETENUMOIS3, 
+     @11 as RETENUMOIS6, 
+     @12 as RETENUMOIS12, 
+     @13 as CUMULRETENUPRET, 
+     @14 as RETENUMOIS9
+FROM
+[..\QVD\PRET.qvd]
+(qvd, filters(
+Remove(Col, Pos(Top, 17)),
+Remove(Col, Pos(Top, 16)),
+Remove(Col, Pos(Top, 15))
+));
+
+
+TEMPSPRET:
+		LOAD Min(DATEPRET) AS MINDATEPRET,
+		MAX(DATEPRET) AS MAXDATEPRET
+		Resident PRET;
+LET VARMINDATEPRET=Num(Peek('MINDATEPRET',0,'TEMPSPRET'));
+LET VARMAXDATEPRET=Num(Peek('MAXDATEPRET',0,'TEMPSPRET'));
+DROP Table TEMPSPRET;
+				
+TEMPCALENDERPRET:
+LOAD 
+		$(VARMINDATEPRET)+IterNo()-1 as NUMPRET,
+		Date($(VARMINDATEPRET)+IterNo()-1) as TEMPSDATEPRET
+		AUTOGENERATE 1 WHILE $(VARMINDATEPRET)+IterNo()-1 <=$(VARMAXDATEPRET);
+MASTERCALENDERPRET :
+LOAD TEMPSDATEPRET as ORDERDATEPRET,
+Week (TEMPSDATEPRET) AS WEEKPRET,
+Year(TEMPSDATEPRET) as YEARPRET,
+num(Year (TEMPSDATEPRET))&'-'&num(Month(TEMPSDATEPRET))&'-01 00:00:00' as IDMONTHYEARPRET,
+MONTH(TEMPSDATEPRET) as MONTHPRET,
+DAY(TEMPSDATEPRET) as DAYPRET,
+YearToDate(TEMPSDATEPRET)*-1 as CURRYEARIDFLAGPRET,
+YearToDate(TEMPSDATEPRET,-1)*-1 as LASTYEARIDFLAGPRET,
+InYear(TEMPSDATEPRET,MonthStart($(VARMAXDATE)),-1) as RC12PRET,
+Date(MonthsStart(TEMPSDATEPRET,'MM-YYYY')) AS MONTHYEARPRET,
+ApplyMap('QUARTERSMAP',Month(TEMPSDATEPRET),Null()) as QUARTERPRET,
+Week(WeekStart(TEMPSDATEPRET))&'-'&WeekYear(TEMPSDATEPRET) as WEEKYEARPRET,
+WeekDay(TEMPSDATEPRET) as WEEKDAYPRET
+Resident TEMPCALENDERPRET
+
+Order By TEMPSDATEPRET asc;
+DROP Table TEMPCALENDERPRET;
+
+
+							//*****************type_pret*******************
+TYPEPRET:
+LOAD @1 as CODTPR, 
+     @2 as LIBPRET, 
+     If([@3]='','N',[@3]) as LIQPRET, 
+     @4 as ORDRE, 
+     If([@6]='','N',[@6]) as JUSTIF,
+     If([@7]='','N',[@7]) as PRETSOC, 
+     @8 as CODFRS, 
+     @9 as AVCSALAIRE
+FROM
+[..\QVD\TYPPRET.qvd]
+(qvd, filters(
+Remove(Col, Pos(Top, 6)),
+Remove(Col, Pos(Top, 6))
+));
+
+
+							//*****************FRSPRET*******************
+FOURNISSEURPRET:
+LOAD @1 as CODFRS, 
+     @2 as LIBFRS
+FROM
+[..\QVD\FRSPRET.qvd]
+(qvd, filters(
+Remove(Col, Pos(Top, 3))
+));

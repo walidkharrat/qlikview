@@ -1,0 +1,214 @@
+//*****************ENTETE_BULLETIN:EMPLOYEE_HIST*******************
+
+EMPLOYEE_HIST:
+LOAD num(@1) as ANNEE_EB, 
+    num(@2) as MOIS_EB, 
+    NUM(@3) as MATEMP_EB,
+     //num(@2)&'-'&num(@1) AS IDMONTHYEAR,
+    
+     NUM(@3)&'-'&num(@2)&'-'&if(num([@1])=0,2000,
+	 	if(num([@1])=3,2003,
+	 	if(num([@1])=201,2001,
+	 	if(num([@1])=210,2010,
+	 	if(num([@1])=88,2016,
+	 		num(@1)))))) as  MATEMP_PRET,
+	 		
+     NUM(@3)&'-'&num(@2)&'-'&if(num([@1])=0,2000,
+	 	if(num([@1])=3,2003,
+	 	if(num([@1])=201,2001,
+	 	if(num([@1])=210,2010,
+	 	if(num([@1])=88,2016,
+	 		num(@1)))))) as IDPOINTM_EB, 
+	 		  NUM(@3)&'-'&num(@2)&'-'&if(num([@1])=0,2000,
+	 	if(num([@1])=3,2003,
+	 	if(num([@1])=201,2001,
+	 	if(num([@1])=210,2010,
+	 	if(num([@1])=88,2016,
+	 		num(@1)))))) as IDPOINTM_M,
+	 @15&'-'&@16 as CODE_PSP,
+     @4 as TYPBUL, 
+     @5 as CODCNTB, 
+     @6 as CODSRV, 
+     @7 as CODGRD, 
+     @8 as CODCAT, 
+     @9 as CLASSE, 
+     @10 as ECH, 
+     //@11 as ENFIMP,
+     If([@11]='','0',[@11]) as [ENFIMP],  
+     @12 as BASE, 
+     @13 as CODFONC, 
+     @14 as SRVAVC
+FROM
+[..\QVD\ENTETE_BULLETIN.qvd]
+(qvd, filters(
+Remove(Col, Pos(Top, 11)),
+Remove(Col, Pos(Top, 12)),
+Remove(Col, Pos(Top, 17))
+));
+STORE [EMPLOYEE_HIST] into ..\QVD\EMPLOYEE_HIST_REDUIT.qvd ;
+DROP Table EMPLOYEE_HIST;
+
+table1:
+LOAD //IDPOINTM_EB,
+	 ANNEE_EB,
+	 MOIS_EB,
+	 MATEMP_EB,
+	 IDPOINTM_M,
+	 MATEMP_PRET,
+	 //IDMONTHYEAR,
+     TYPBUL, 
+     IDPOINTM_EB,
+     CODCNTB, 
+     CODSRV, 
+     CODGRD, 
+     CODCAT, 
+     CLASSE, 
+     ECH, 
+     ENFIMP, 
+     BASE, 
+     CODFONC,
+     CODE_PSP, 
+     SRVAVC
+FROM
+[..\QVD\EMPLOYEE_HIST_REDUIT.qvd]
+(qvd)
+Where ANNEE_EB>=2005
+;
+
+inner Join(table1)
+table2:
+//inner Keep(table1)
+
+LOAD 	//num(MATEMP) as MATEMP_P,
+		//num(MATEMP) as MATEMP_B,
+		//num(MATEMP) as MATEMP_BL,  
+		num(MATEMP) as MATEMP_CAT,
+		//num(MATEMP) as  MATEMP_PRET,
+		//num(MATEMP)&'-'&Year(DATENAIS)&'-'&Year(DATEEMB) AS MATEMP_EB,
+		num(MATEMP) as  MATEMP_EB,
+     	NOMEMP, 
+     	PRENOM, 
+     	DATENAIS,
+     	DATEEMB, 
+     	SEXE, 
+     	SITFAM, 
+     	CHEFFAM, 
+     	DATEEMB as ID_ANCIENETE, 
+    	// CODCNT, 
+     	DATEDEP,
+     	CODDEP,
+     	DATENAIS AS ID_TRANCHE_AGE
+//     	if(year(Today())-year(DATENAIS)<=21,1,
+//     	if(year(Today())-year(DATENAIS)>=22 and year(Today())-year(DATENAIS)<=25,2,
+//     	if(year(Today())-year(DATENAIS)>=26 and year(Today())-year(DATENAIS)<=29,3,
+//     	if(year(Today())-year(DATENAIS)>=30 and year(Today())-year(DATENAIS)<=33,4,
+//     	if(year(Today())-year(DATENAIS)>=34 and year(Today())-year(DATENAIS)<=37,5,
+//     	if(year(Today())-year(DATENAIS)>=38 and year(Today())-year(DATENAIS)<=41,6,
+//     	if(year(Today())-year(DATENAIS)>=42 and year(Today())-year(DATENAIS)<=45,7,
+//     	if(year(Today())-year(DATENAIS)>=46 and year(Today())-year(DATENAIS)<=49,8,
+//     	if(year(Today())-year(DATENAIS)>=50 and year(Today())-year(DATENAIS)<=53,9,
+//     	if(year(Today())-year(DATENAIS)>=54 and year(Today())-year(DATENAIS)<=57,10,
+//     	if(year(Today())-year(DATENAIS)>=58 and year(Today())-year(DATENAIS)<=61,11,
+//     	if(year(Today())-year(DATENAIS)>=62 and year(Today())-year(DATENAIS)<=65,12,
+//     	if(year(Today())-year(DATENAIS)>=66 and year(Today())-year(DATENAIS)<=69,13,
+//     	if(year(Today())-year(DATENAIS)>=70,14,
+//     	)))))))))))))) as ID_TRANCHE_AGE
+   
+
+FROM
+[..\QVD\EMPLOYE.qvd]
+(qvd);
+
+STORE [table1] into ..\QVD\CONCATTABLE.qvd ;
+
+HIST_EMP:
+LOAD //IDPOINTM_EB,
+	 ANNEE_EB,
+	 MOIS_EB,
+	  date(ANNEE_EB&'-'&MOIS_EB&'-01 00:00:00') as DATEHISTEMP, 
+	  num(ANNEE_EB)&'-'&num(MOIS_EB)&'-01 00:00:00' as IDMONTHYEARHISTEMP,
+	 MATEMP_EB,
+	 IDPOINTM_M,
+	 MATEMP_PRET,
+	 //IDMONTHYEAR,
+     TYPBUL, 
+     IDPOINTM_EB,
+     CODCNTB, 
+     CODSRV, 
+     CODGRD, 
+     CODCAT, 
+     CLASSE, 
+     ECH, 
+     if(ANNEE_EB-year(DATEEMB)<5,1,
+     	if(ANNEE_EB-year(DATEEMB)>=5 and ANNEE_EB-year(DATEEMB)<10,2,
+     	if(ANNEE_EB-year(DATEEMB)>=10 and ANNEE_EB-year(DATEEMB)<15,3,
+     	if(ANNEE_EB-year(DATEEMB)>=15 and ANNEE_EB-year(DATEEMB)<20,4,
+     	if(ANNEE_EB-year(DATEEMB)>=20 and ANNEE_EB-year(DATEEMB)<25,5,
+     	if(ANNEE_EB-year(DATEEMB)>=25 and ANNEE_EB-year(DATEEMB)<30,6,
+     	if(ANNEE_EB-year(DATEEMB)>=30 and ANNEE_EB-year(DATEEMB)<35,7,
+     	if(ANNEE_EB-year(DATEEMB)>=35and ANNEE_EB-year(DATEEMB)<40,8,
+     	))))))))
+      as ID_ANCIENETE, 
+     //DATENAIS,
+     if(ANNEE_EB-year(DATENAIS)<=21,1,
+     	if(ANNEE_EB-year(DATENAIS)>=22 and ANNEE_EB-year(DATENAIS)<=25,2,
+     	if(ANNEE_EB-year(DATENAIS)>=26 and ANNEE_EB-year(DATENAIS)<=29,3,
+     	if(ANNEE_EB-year(DATENAIS)>=30 and ANNEE_EB-year(DATENAIS)<=33,4,
+     	if(ANNEE_EB-year(DATENAIS)>=34 and ANNEE_EB-year(DATENAIS)<=37,5,
+     	if(ANNEE_EB-year(DATENAIS)>=38 and ANNEE_EB-year(DATENAIS)<=41,6,
+     	if(ANNEE_EB-year(DATENAIS)>=42 and ANNEE_EB-year(DATENAIS)<=45,7,
+     	if(ANNEE_EB-year(DATENAIS)>=46 and ANNEE_EB-year(DATENAIS)<=49,8,
+     	if(ANNEE_EB-year(DATENAIS)>=50 and ANNEE_EB-year(DATENAIS)<=53,9,
+     	if(ANNEE_EB-year(DATENAIS)>=54 and ANNEE_EB-year(DATENAIS)<=57,10,
+     	if(ANNEE_EB-year(DATENAIS)>=58 and ANNEE_EB-year(DATENAIS)<=61,11,
+     	if(ANNEE_EB-year(DATENAIS)>=62 and ANNEE_EB-year(DATENAIS)<=65,12,
+     	if(ANNEE_EB-year(DATENAIS)>=66 and ANNEE_EB-year(DATENAIS)<=69,13,
+     	if(ANNEE_EB-year(DATENAIS)>=70,14,
+     	)))))))))))))) as ID_TRANCHE_AGE,
+     ENFIMP, 
+     BASE, 
+     CODFONC,
+     CODE_PSP, 
+     SRVAVC
+FROM
+[..\QVD\CONCATTABLE.qvd]
+(qvd)
+Where ANNEE_EB>=2005
+;
+STORE [HIST_EMP] into ..\QVD\hist_emp.qvd ;
+
+
+TEMPSHISTEMP:
+		LOAD Min(DATEHISTEMP) AS MINDATEHISTEMP,
+		MAX(DATEHISTEMP) AS MAXDATEHISTEMP
+		Resident HIST_EMP;
+LET VARMINDATEHISTEMP=Num(Peek('MINDATEHISTEMP',0,'TEMPSHISTEMP'));
+LET VARMAXDATEHISTEMP=Num(Peek('MAXDATEHISTEMP',0,'TEMPSHISTEMP'));
+DROP Table TEMPSHISTEMP;
+				
+TEMPCALENDERHISTEMP:
+LOAD 
+		$(VARMINDATEHISTEMP)+IterNo()-1 as NUMHISTEMP,
+		Date($(VARMINDATEHISTEMP)+IterNo()-1) as TEMPSDATEHISTEMP
+		AUTOGENERATE 1 WHILE $(VARMINDATEHISTEMP)+IterNo()-1 <=$(VARMAXDATEHISTEMP);
+MASTERCALENDERHISTEMP :
+LOAD TEMPSDATEHISTEMP as ORDERDATEHISTEMP,
+Week (TEMPSDATEHISTEMP) AS WEEKHISTEMP,
+Year(TEMPSDATEHISTEMP) as YEARHISTEMP,
+num(Year (TEMPSDATEHISTEMP))&'-'&num(Month(TEMPSDATEHISTEMP))&'-01 00:00:00' as IDMONTHYEARHISTEMP,
+MONTH(TEMPSDATEHISTEMP) as MONTHHISTEMP,
+DAY(TEMPSDATEHISTEMP) as DAYHISTEMP,
+YearToDate(TEMPSDATEHISTEMP)*-1 as CURRYEARIDFLAGHISTEMP,
+YearToDate(TEMPSDATEHISTEMP,-1)*-1 as LASTYEARIDFLAGHISTEMP,
+InYear(TEMPSDATEHISTEMP,MonthStart($(VARMAXDATEHISTEMP)),-1) as RC12HISTEMP,
+Date(MonthsStart(TEMPSDATEHISTEMP,'MM-YYYY')) AS MONTHYEARHISTEMP,
+ApplyMap('QUARTERSMAP',Month(TEMPSDATEHISTEMP),Null()) as QUARTERHISTEMP,
+Week(WeekStart(TEMPSDATEHISTEMP))&'-'&WeekYear(TEMPSDATEHISTEMP) as WEEKYEARHISTEMP,
+WeekDay(TEMPSDATEHISTEMP) as WEEKDAYHISTEMP
+Resident TEMPCALENDERHISTEMP
+
+Order By TEMPSDATEHISTEMP asc;
+DROP Table TEMPCALENDERHISTEMP;
+
+
+

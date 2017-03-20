@@ -1,0 +1,31 @@
+
+							//*****************RUBRIQUE*******************
+
+LOAD @1 as CODRUB, 
+     @2 as LIBRUB, 
+     @3 as OABP, 
+     @4 as OAJP, 
+     @5 as SIGNE, 
+     @6 as CALCUL, 
+     @7 as IMPCOT, 
+     @8 as POSITION, 
+     @9 as NATURE, 
+     @10 as TYPE, 
+     @11 as RUBAVNAT, 
+     @12 as SPECIF, 
+     @13 as COMPTE, 
+     @14 as CODFAM, 
+     @15 as COMPTEPA, 
+     @16 as EXCEPT, 
+     @17 as ACTIF, 
+     @18 as AVANTAGENATURE, 
+     @19 as COMPTENC, 
+     @20 as COMPTEPA_NC, 
+     @21 as ACTIF_NC
+FROM
+[..\QVD\RUBRIQUE.qvd]
+(qvd, filters(
+Remove(Col, Pos(Top, 17)),
+Remove(Col, Pos(Top, 16)),
+Remove(Col, Pos(Top, 3))
+));

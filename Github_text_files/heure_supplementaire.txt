@@ -1,0 +1,52 @@
+      /*********    Creation d'un tableau contenant les types d'heures supplementaire  ***********/
+TYPEHSUP:
+
+MAPPING LOAD * INLINE [
+    ID_TYPE_SUP, LIB_TYPE_SUP
+    3, HEURE SUP NORMALE
+    1, HEURE SUP 25
+    2, HEURE SUP 50
+];  
+          
+
+
+                   /*********    creation de la tabl d'HEURE SUP  ***********/
+
+
+HEURESUP:
+CrossTable(TYPE_SUP, NBR_HEURE, 1)
+LOAD  
+     num(@3)&'-'&num(@2)&'-'&if(num(@1)=0,2000,
+	 	if(num(@1)=3,2003,
+	 	if(num(@1)=201,2001,
+	 	if(num(@1)=210,2010,
+	 	if(num(@1)=88,2016,
+	 		num(@1)))))) as IDPOINTMS,
+     num(@4) as 'HEURE SUP NORMAL' , 
+     num(@5)as 'HEURE SUP 25',
+     num(@6) as 'HEURE SUP 50'
+     
+FROM
+[..\QVD\POINTM_TMP.qvd]
+(qvd, filters(
+Remove(Col, Pos(Top, 4)),
+Remove(Col, Pos(Top, 5)),
+Remove(Col, Pos(Top, 9)),
+Remove(Col, Pos(Top, 10)),
+Remove(Col, Pos(Top, 11)),
+Remove(Col, Pos(Top, 12)),
+Remove(Col, Pos(Top, 13)),
+Remove(Col, Pos(Top, 14)),
+Remove(Col, Pos(Top, 15)),
+Remove(Col, Pos(Top, 16)),
+Remove(Col, Pos(Top, 17)),
+Remove(Col, Pos(Top, 18)),
+Remove(Col, Pos(Top, 19)),
+Remove(Col, Pos(Top, 20)),
+Remove(Col, Pos(Top, 21)),
+Remove(Col, Pos(Top, 22)),
+Remove(Col, Pos(Top, 23)),
+Remove(Col, Pos(Top, 24)),
+Remove(Col, Pos(Top, 25)),
+));
+

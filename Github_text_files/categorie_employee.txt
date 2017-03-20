@@ -1,0 +1,48 @@
+//*****************EMPCAT*******************
+
+EMPCAT_R:
+LOAD @1 as MATEMP_CAT, 
+     @2 as CATA,
+     @3 as ECHA,
+     @4 as CATN,
+     @5 as ECHN,
+     @6 as GRADA, 
+     @7 as GRADN, 
+     @8 as AVANC, 
+     @9 as DATEMUT, 
+     @10 as DATEVAL, 
+	 @11 as CLASSEA, 
+     @12 as CLASSEN,
+     if(@13='', 'N', [@13]) as [VALIDATION]
+     
+FROM
+[..\QVD\EMPCAT.qvd]
+(qvd, filters(
+Remove(Col, Pos(Top, 13)),
+Remove(Col, Pos(Top, 12)),
+Remove(Col, Pos(Top, 11))
+))
+;
+STORE [EMPCAT_R] into ..\QVD\EMPCAT_REDUIT.qvd ;
+
+EMPCAT:
+LOAD MATEMP_CAT, 
+    CATA,
+    ECHA,
+    CATN,
+    ECHN, 
+    GRADA, 
+    GRADN, 
+    AVANC, 
+    DATEMUT, 
+    DATEVAL, 
+    CLASSEA, 
+	CLASSEN,
+	VALIDATION
+     
+FROM
+[..\QVD\EMPCAT_REDUIT.qvd]
+(qvd)
+
+Where  len(trim(AVANC))>0 and not(AVANC LIKE '0')
+;

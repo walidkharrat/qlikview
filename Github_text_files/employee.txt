@@ -1,0 +1,50 @@
+
+
+//*****************EMPLOYE*******************
+EMPLOYEE:
+LOAD 	//num(MATEMP) as MATEMP_P,
+		//num(MATEMP) as MATEMP_B,
+		//num(MATEMP) as MATEMP_BL,  
+		num(MATEMP) as MATEMP_CAT,
+		//num(MATEMP) as  MATEMP_PRET,
+		num(MATEMP) as  MATEMP_EB,
+     	NOMEMP, 
+     	PRENOM, 
+     	DATENAIS, 
+     	SEXE, 
+     	SITFAM, 
+     	CHEFFAM, 
+     	DATEEMB, 
+    	// CODCNT, 
+     	DATEDEP,
+     	CODDEP
+//     	if(year(Today())-year(DATENAIS)<=21,1,
+//     	if(year(Today())-year(DATENAIS)>=22 and year(Today())-year(DATENAIS)<=25,2,
+//     	if(year(Today())-year(DATENAIS)>=26 and year(Today())-year(DATENAIS)<=29,3,
+//     	if(year(Today())-year(DATENAIS)>=30 and year(Today())-year(DATENAIS)<=33,4,
+//     	if(year(Today())-year(DATENAIS)>=34 and year(Today())-year(DATENAIS)<=37,5,
+//     	if(year(Today())-year(DATENAIS)>=38 and year(Today())-year(DATENAIS)<=41,6,
+//     	if(year(Today())-year(DATENAIS)>=42 and year(Today())-year(DATENAIS)<=45,7,
+//     	if(year(Today())-year(DATENAIS)>=46 and year(Today())-year(DATENAIS)<=49,8,
+//     	if(year(Today())-year(DATENAIS)>=50 and year(Today())-year(DATENAIS)<=53,9,
+//     	if(year(Today())-year(DATENAIS)>=54 and year(Today())-year(DATENAIS)<=57,10,
+//     	if(year(Today())-year(DATENAIS)>=58 and year(Today())-year(DATENAIS)<=61,11,
+//     	if(year(Today())-year(DATENAIS)>=62 and year(Today())-year(DATENAIS)<=65,12,
+//     	if(year(Today())-year(DATENAIS)>=66 and year(Today())-year(DATENAIS)<=69,13,
+//     	if(year(Today())-year(DATENAIS)>=70,14,
+//     	)))))))))))))) as ID_TRANCHE_AGE
+   
+
+FROM
+[..\QVD\EMPLOYE.qvd]
+(qvd);
+//*****************DEPART*******************
+
+LOAD @1 as CODDEP, 
+	 @2 as LIBDEP
+
+FROM
+[..\QVD\DEPART.qvd]
+(qvd, filters(
+Remove(Col, Pos(Top, 3))
+));
